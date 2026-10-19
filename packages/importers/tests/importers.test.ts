@@ -86,6 +86,25 @@ describe("importers turn any platform's export into normalized executions", () =
     expect(result.executions[0]!.fee).toBe(1);
   });
 
+  it("an IBKR activity statement classifies each derivative category", () => {
+    const header = IBKR_CSV.split("\n")[0];
+    const row = (category: string, symbol: string) =>
+      `Trades,Data,Order,${category},USD,${symbol},"2026-01-05, 09:31:00",1,10,0,0,-1,0,0,0,O`;
+    const result = parseAuto(
+      [
+        header,
+        row("Equity and Index Options", "SPY 20NOV26 600 C"),
+        row("Futures", "ESZ6"),
+        row("Options On Futures", "ES 18DEC26 6500 C"),
+      ].join("\n"),
+    )!;
+    expect(result.executions.map((e) => [e.symbol, e.assetClass])).toEqual([
+      ["SPY 20NOV26 600 C", "option"],
+      ["ESZ6", "futures"],
+      ["ES 18DEC26 6500 C", "option"],
+    ]);
+  });
+
   it("a NinjaTrader export strips the contract month from the instrument", () => {
     const result = parseAuto(NINJA_CSV)!;
     expect(result.format).toBe("ninjatrader");

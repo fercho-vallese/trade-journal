@@ -7,6 +7,7 @@ import type { ImportFormat, ImportedExecution, ParsedImport } from "../types";
 const ASSET_MAP: Record<string, AssetClass> = {
   stocks: "equity",
   equityandindexoptions: "option",
+  optionsonfutures: "option",
   futures: "futures",
   forex: "forex",
   cryptocurrency: "crypto",
