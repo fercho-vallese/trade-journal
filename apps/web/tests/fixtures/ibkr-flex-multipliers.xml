@@ -1,0 +1,28 @@
+<!-- Synthetic IBKR Activity Flex statement for tests. Not a real account or real fills. -->
+<FlexQueryResponse queryName="journal-test" type="AF">
+  <FlexStatements count="1">
+    <FlexStatement accountId="U_TEST" fromDate="20260901" toDate="20260930">
+      <Trades>
+        <Trade accountId="U_TEST" assetCategory="STK" symbol="TEST" multiplier="1" buySell="BUY" quantity="10" tradePrice="100" ibCommission="-1" dateTime="20260915;100000" levelOfDetail="EXECUTION" />
+        <Trade accountId="U_TEST" assetCategory="STK" symbol="TEST" multiplier="1" buySell="SELL" quantity="-10" tradePrice="105" ibCommission="-1" dateTime="20260915;110000" levelOfDetail="EXECUTION" />
+        <Trade accountId="U_TEST" assetCategory="OPT" symbol="TEST  261016C00100000" multiplier="100" buySell="BUY" quantity="2" tradePrice="1.5" ibCommission="-1.3" dateTime="20260916;100000" levelOfDetail="EXECUTION" />
+        <Trade accountId="U_TEST" assetCategory="OPT" symbol="TEST  261016C00100000" multiplier="100" buySell="SELL" quantity="-2" tradePrice="2" ibCommission="-1.3" dateTime="20260916;140000" levelOfDetail="EXECUTION" />
+        <Trade accountId="U_TEST" assetCategory="OPT" symbol="TEST  260918P00090000" multiplier="100" buySell="BUY" quantity="1" tradePrice="0.5" ibCommission="-0.65" dateTime="20260917;100000" levelOfDetail="EXECUTION" />
+        <Trade accountId="U_TEST" assetCategory="OPT" symbol="TEST  260918P00090000" multiplier="100" buySell="SELL" quantity="-1" tradePrice="0" ibCommission="0" dateTime="20260918;162000" levelOfDetail="EXECUTION" />
+        <Trade accountId="U_TEST" assetCategory="FOP" symbol="XYZ   261016C6000" multiplier="50" buySell="SELL" quantity="-1" tradePrice="12" ibCommission="-2" dateTime="20260921;100000" levelOfDetail="EXECUTION" />
+        <Trade accountId="U_TEST" assetCategory="FOP" symbol="XYZ   261016C6000" multiplier="50" buySell="BUY" quantity="1" tradePrice="10" ibCommission="-2" dateTime="20260921;120000" levelOfDetail="EXECUTION" />
+        <Trade accountId="U_TEST" assetCategory="FUT" symbol="TSTZ6" multiplier="5" buySell="BUY" quantity="1" tradePrice="6000" ibCommission="-0.62" dateTime="20260922;100000" levelOfDetail="EXECUTION" />
+        <Trade accountId="U_TEST" assetCategory="FUT" symbol="TSTZ6" multiplier="5" buySell="SELL" quantity="-1" tradePrice="6010" ibCommission="-0.62" dateTime="20260922;110000" levelOfDetail="EXECUTION" />
+        <Trade accountId="U_TEST" assetCategory="FUT" symbol="SAVZ6" multiplier="20" buySell="BUY" quantity="1" tradePrice="100" ibCommission="-1" dateTime="20260923;100000" levelOfDetail="EXECUTION" />
+        <Trade accountId="U_TEST" assetCategory="FUT" symbol="SAVZ6" multiplier="20" buySell="SELL" quantity="-1" tradePrice="101" ibCommission="-1" dateTime="20260923;110000" levelOfDetail="EXECUTION" />
+        <Trade accountId="U_TEST" assetCategory="CASH" symbol="EUR.USD" multiplier="1" buySell="BUY" quantity="1000" tradePrice="1.1" ibCommission="-2" dateTime="20260924;100000" levelOfDetail="EXECUTION" />
+      </Trades>
+      <OpenPositions>
+        <OpenPosition accountId="U_TEST" assetCategory="CASH" symbol="EUR.USD" position="1000" markPrice="1.1" costBasisPrice="1.1" levelOfDetail="SUMMARY" />
+      </OpenPositions>
+      <CashReport>
+        <CashReportCurrency accountId="U_TEST" currency="BASE_SUMMARY" endingCash="10000" />
+      </CashReport>
+    </FlexStatement>
+  </FlexStatements>
+</FlexQueryResponse>

@@ -4,6 +4,9 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+patchedDependencies:
+  '@luxalgo/broker-sdk@0.5.1': 8b4cc25c99731c01bde6617b3d2106c081da0ab17eb33bf0eabb4257ae9f1ea5
+
 importers:
 
   .:
@@ -40,7 +43,7 @@ importers:
         version: 10.0.0(@dnd-kit/core@6.3.1(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(react@19.2.8)
       '@luxalgo/broker-sdk':
         specifier: 0.5.1
-        version: 0.5.1(react@19.2.8)
+        version: 0.5.1(patch_hash=8b4cc25c99731c01bde6617b3d2106c081da0ab17eb33bf0eabb4257ae9f1ea5)(react@19.2.8)
       '@luxalgo/journal-core':
         specifier: workspace:*
         version: link:../../packages/core
@@ -3194,7 +3197,7 @@ snapshots:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.5
 
-  '@luxalgo/broker-sdk@0.5.1(react@19.2.8)':
+  '@luxalgo/broker-sdk@0.5.1(patch_hash=8b4cc25c99731c01bde6617b3d2106c081da0ab17eb33bf0eabb4257ae9f1ea5)(react@19.2.8)':
     optionalDependencies:
       react: 19.2.8
 

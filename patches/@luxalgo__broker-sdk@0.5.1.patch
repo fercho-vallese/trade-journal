@@ -1,0 +1,196 @@
+diff --git a/dist/adapters/index.cjs b/dist/adapters/index.cjs
+index f8c373b333a85bfc80477a39c622d01192162d91..f87667f5b8c0307b0a76b72f46a74a7463914668 100644
+--- a/dist/adapters/index.cjs
++++ b/dist/adapters/index.cjs
+@@ -1190,13 +1190,18 @@ var parseFlexStatement = (xml, options = {}) => {
+     if (quantity <= 0 || price <= 0) continue;
+     const commission = asFiniteNumber(attr(trade, "ibCommission"));
+     const executedAt = flexDateToIso(attr(trade, "dateTime", "tradeDate"));
++    const multiplier = asFiniteNumber(attr(trade, "multiplier"));
++    const tradeAssetCategory = attr(trade, "assetCategory");
++    const tradeAssetClass = tradeAssetCategory ? FLEX_ASSET_CLASSES[tradeAssetCategory] : void 0;
+     trades.push({
+       symbol,
+       side: side === "BUY" ? "buy" : "sell",
+       quantity,
+       price,
+       ...commission !== void 0 ? { fee: Math.abs(commission) } : {},
+-      ...executedAt ? { executedAt } : {}
++      ...executedAt ? { executedAt } : {},
++      ...multiplier !== void 0 && multiplier > 0 ? { multiplier } : {},
++      ...tradeAssetClass ? { assetClass: tradeAssetClass } : {}
+     });
+   }
+   const positions = [];
+diff --git a/dist/chunk-MRKQTLQJ.js b/dist/chunk-MRKQTLQJ.js
+index e23403d5680b280dce12590b83cf3f205262f788..23d19ab6542812b91764066450c728038395e8da 100644
+--- a/dist/chunk-MRKQTLQJ.js
++++ b/dist/chunk-MRKQTLQJ.js
+@@ -858,13 +858,18 @@ var parseFlexStatement = (xml, options = {}) => {
+     if (quantity <= 0 || price <= 0) continue;
+     const commission = asFiniteNumber(attr(trade, "ibCommission"));
+     const executedAt = flexDateToIso(attr(trade, "dateTime", "tradeDate"));
++    const multiplier = asFiniteNumber(attr(trade, "multiplier"));
++    const tradeAssetCategory = attr(trade, "assetCategory");
++    const tradeAssetClass = tradeAssetCategory ? FLEX_ASSET_CLASSES[tradeAssetCategory] : void 0;
+     trades.push({
+       symbol,
+       side: side === "BUY" ? "buy" : "sell",
+       quantity,
+       price,
+       ...commission !== void 0 ? { fee: Math.abs(commission) } : {},
+-      ...executedAt ? { executedAt } : {}
++      ...executedAt ? { executedAt } : {},
++      ...multiplier !== void 0 && multiplier > 0 ? { multiplier } : {},
++      ...tradeAssetClass ? { assetClass: tradeAssetClass } : {}
+     });
+   }
+   const positions = [];
+diff --git a/dist/connect/core.cjs b/dist/connect/core.cjs
+index 101b75be3a524f95f9076b2b7065cb8496e43073..ec468a55064b77e52b95ddd672c6dc5600b358c4 100644
+--- a/dist/connect/core.cjs
++++ b/dist/connect/core.cjs
+@@ -1068,13 +1068,18 @@ var parseFlexStatement = (xml, options = {}) => {
+     if (quantity <= 0 || price <= 0) continue;
+     const commission = asFiniteNumber(attr(trade, "ibCommission"));
+     const executedAt = flexDateToIso(attr(trade, "dateTime", "tradeDate"));
++    const multiplier = asFiniteNumber(attr(trade, "multiplier"));
++    const tradeAssetCategory = attr(trade, "assetCategory");
++    const tradeAssetClass = tradeAssetCategory ? FLEX_ASSET_CLASSES[tradeAssetCategory] : void 0;
+     trades.push({
+       symbol,
+       side: side === "BUY" ? "buy" : "sell",
+       quantity,
+       price,
+       ...commission !== void 0 ? { fee: Math.abs(commission) } : {},
+-      ...executedAt ? { executedAt } : {}
++      ...executedAt ? { executedAt } : {},
++      ...multiplier !== void 0 && multiplier > 0 ? { multiplier } : {},
++      ...tradeAssetClass ? { assetClass: tradeAssetClass } : {}
+     });
+   }
+   const positions = [];
+diff --git a/dist/connect/index.cjs b/dist/connect/index.cjs
+index 598120f37d36be30397eac036d5d54c596691856..102d1950cc899a265869d73d51cff19959d407f3 100644
+--- a/dist/connect/index.cjs
++++ b/dist/connect/index.cjs
+@@ -1071,13 +1071,18 @@ var parseFlexStatement = (xml, options = {}) => {
+     if (quantity <= 0 || price <= 0) continue;
+     const commission = asFiniteNumber(attr(trade, "ibCommission"));
+     const executedAt = flexDateToIso(attr(trade, "dateTime", "tradeDate"));
++    const multiplier = asFiniteNumber(attr(trade, "multiplier"));
++    const tradeAssetCategory = attr(trade, "assetCategory");
++    const tradeAssetClass = tradeAssetCategory ? FLEX_ASSET_CLASSES[tradeAssetCategory] : void 0;
+     trades.push({
+       symbol,
+       side: side === "BUY" ? "buy" : "sell",
+       quantity,
+       price,
+       ...commission !== void 0 ? { fee: Math.abs(commission) } : {},
+-      ...executedAt ? { executedAt } : {}
++      ...executedAt ? { executedAt } : {},
++      ...multiplier !== void 0 && multiplier > 0 ? { multiplier } : {},
++      ...tradeAssetClass ? { assetClass: tradeAssetClass } : {}
+     });
+   }
+   const positions = [];
+diff --git a/dist/index.cjs b/dist/index.cjs
+index b447edc9251e50220c1548dee0b6cb37ddc6a679..c9442d0b988d6c6ffdd0ec169163e7049e65426f 100644
+--- a/dist/index.cjs
++++ b/dist/index.cjs
+@@ -1076,13 +1076,18 @@ var parseFlexStatement = (xml, options = {}) => {
+     if (quantity <= 0 || price <= 0) continue;
+     const commission = asFiniteNumber(attr(trade, "ibCommission"));
+     const executedAt = flexDateToIso(attr(trade, "dateTime", "tradeDate"));
++    const multiplier = asFiniteNumber(attr(trade, "multiplier"));
++    const tradeAssetCategory = attr(trade, "assetCategory");
++    const tradeAssetClass = tradeAssetCategory ? FLEX_ASSET_CLASSES[tradeAssetCategory] : void 0;
+     trades.push({
+       symbol,
+       side: side === "BUY" ? "buy" : "sell",
+       quantity,
+       price,
+       ...commission !== void 0 ? { fee: Math.abs(commission) } : {},
+-      ...executedAt ? { executedAt } : {}
++      ...executedAt ? { executedAt } : {},
++      ...multiplier !== void 0 && multiplier > 0 ? { multiplier } : {},
++      ...tradeAssetClass ? { assetClass: tradeAssetClass } : {}
+     });
+   }
+   const positions = [];
+diff --git a/dist/schema-ChGRMUpp.d.cts b/dist/schema-ChGRMUpp.d.cts
+index 0db3a1d0f2e1281ad28c7157a9b708af39004e29..2bab23954cb1b43a7906ee57c6a393feb6b83888 100644
+--- a/dist/schema-ChGRMUpp.d.cts
++++ b/dist/schema-ChGRMUpp.d.cts
+@@ -38,6 +38,9 @@ type Trade = {
+     fee?: number;
+     /** ISO 8601 timestamp, when the source carried one. */
+     executedAt?: string;
++    /** Contract multiplier (e.g. 100 for US equity options), when the source states it. */
++    multiplier?: number;
++    assetClass?: AssetClass;
+ };
+ /** One account at a broker, fully normalized. */
+ type Account = {
+diff --git a/dist/schema-ChGRMUpp.d.ts b/dist/schema-ChGRMUpp.d.ts
+index 0db3a1d0f2e1281ad28c7157a9b708af39004e29..2bab23954cb1b43a7906ee57c6a393feb6b83888 100644
+--- a/dist/schema-ChGRMUpp.d.ts
++++ b/dist/schema-ChGRMUpp.d.ts
+@@ -38,6 +38,9 @@ type Trade = {
+     fee?: number;
+     /** ISO 8601 timestamp, when the source carried one. */
+     executedAt?: string;
++    /** Contract multiplier (e.g. 100 for US equity options), when the source states it. */
++    multiplier?: number;
++    assetClass?: AssetClass;
+ };
+ /** One account at a broker, fully normalized. */
+ type Account = {
+diff --git a/dist/sync/cli.cjs b/dist/sync/cli.cjs
+index dd552ddd36439fbb84ff17ce4da02507eecd0f47..69f580c8268056c9b799b47d438e2f8744231b12 100755
+--- a/dist/sync/cli.cjs
++++ b/dist/sync/cli.cjs
+@@ -1070,13 +1070,18 @@ var parseFlexStatement = (xml, options = {}) => {
+     if (quantity <= 0 || price <= 0) continue;
+     const commission = asFiniteNumber(attr(trade, "ibCommission"));
+     const executedAt = flexDateToIso(attr(trade, "dateTime", "tradeDate"));
++    const multiplier = asFiniteNumber(attr(trade, "multiplier"));
++    const tradeAssetCategory = attr(trade, "assetCategory");
++    const tradeAssetClass = tradeAssetCategory ? FLEX_ASSET_CLASSES[tradeAssetCategory] : void 0;
+     trades.push({
+       symbol,
+       side: side === "BUY" ? "buy" : "sell",
+       quantity,
+       price,
+       ...commission !== void 0 ? { fee: Math.abs(commission) } : {},
+-      ...executedAt ? { executedAt } : {}
++      ...executedAt ? { executedAt } : {},
++      ...multiplier !== void 0 && multiplier > 0 ? { multiplier } : {},
++      ...tradeAssetClass ? { assetClass: tradeAssetClass } : {}
+     });
+   }
+   const positions = [];
+diff --git a/dist/sync/index.cjs b/dist/sync/index.cjs
+index f95e2b37583ec57c042386397f3e1cdeb1027eb1..91d56331b40896c3694b84ea702cf1b237f8d452 100644
+--- a/dist/sync/index.cjs
++++ b/dist/sync/index.cjs
+@@ -1258,13 +1258,18 @@ var parseFlexStatement = (xml, options = {}) => {
+     if (quantity <= 0 || price <= 0) continue;
+     const commission = asFiniteNumber(attr(trade, "ibCommission"));
+     const executedAt = flexDateToIso(attr(trade, "dateTime", "tradeDate"));
++    const multiplier = asFiniteNumber(attr(trade, "multiplier"));
++    const tradeAssetCategory = attr(trade, "assetCategory");
++    const tradeAssetClass = tradeAssetCategory ? FLEX_ASSET_CLASSES[tradeAssetCategory] : void 0;
+     trades.push({
+       symbol,
+       side: side === "BUY" ? "buy" : "sell",
+       quantity,
+       price,
+       ...commission !== void 0 ? { fee: Math.abs(commission) } : {},
+-      ...executedAt ? { executedAt } : {}
++      ...executedAt ? { executedAt } : {},
++      ...multiplier !== void 0 && multiplier > 0 ? { multiplier } : {},
++      ...tradeAssetClass ? { assetClass: tradeAssetClass } : {}
+     });
+   }
+   const positions = [];

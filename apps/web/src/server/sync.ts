@@ -1,11 +1,13 @@
 import { connect, listBrokers, type BrokerId } from "@luxalgo/broker-sdk";
 import { eq } from "drizzle-orm";
+import type { AssetClass } from "@luxalgo/journal-core";
 import type { ImportedExecution } from "@luxalgo/journal-importers";
 import { accounts, db } from "@/db";
 import { decryptJson, encryptJson } from "./crypto";
 import { nowIso } from "./ids";
 import { insertExecutions, type InsertResult } from "./executions";
-import { getImportTimeZone } from "./settings";
+import { rebuildAccount } from "./rebuild";
+import { getImportTimeZone, getMultipliers, setSetting } from "./settings";
 import { requireValue } from "./api";
 import {
   assertIbkrSyncTimeZone,
@@ -21,7 +23,44 @@ export interface SyncOutcome extends InsertResult {
   equity: number | null;
   positions: number;
   syncedAt: string;
+  /** Symbols whose broker-stated contract multiplier was saved by this sync. */
+  multipliersAdded: number;
 }
+
+const JOURNAL_ASSET_CLASSES = new Set<string>([
+  "equity",
+  "option",
+  "futures",
+  "forex",
+  "crypto",
+  "cfd",
+  "other",
+]);
+
+const journalAssetClass = (value: string | undefined): AssetClass | undefined =>
+  value !== undefined && JOURNAL_ASSET_CLASSES.has(value) ? (value as AssetClass) : undefined;
+
+/**
+ * Broker-stated contract multipliers (IBKR Flex), for symbols the user has not
+ * configured. Saved values always win, and a symbol reported with conflicting
+ * multipliers is left for the user to decide.
+ */
+export const brokerMultipliers = (
+  trades: { symbol: string; multiplier?: number }[],
+  saved: Record<string, number>,
+): Record<string, number> => {
+  const found = new Map<string, number | null>();
+  for (const { symbol, multiplier } of trades) {
+    if (multiplier === undefined || !Number.isFinite(multiplier) || multiplier <= 0) continue;
+    const previous = found.get(symbol);
+    found.set(symbol, previous === undefined || previous === multiplier ? multiplier : null);
+  }
+  const added: Record<string, number> = {};
+  for (const [symbol, multiplier] of found)
+    if (multiplier !== null && multiplier !== 1 && saved[symbol] === undefined)
+      added[symbol] = multiplier;
+  return added;
+};
 
 export const syncAccount = async (accountId: string): Promise<SyncOutcome> => {
   const account = db.select().from(accounts).where(eq(accounts.id, accountId)).get();
@@ -52,8 +91,10 @@ export const syncAccount = async (accountId: string): Promise<SyncOutcome> => {
   const snapshot = await connection.fetchSnapshot();
   const syncedAt = nowIso();
 
-  const rows: ImportedExecution[] = snapshot.accounts.flatMap((brokerAccount) =>
-    brokerAccount.trades.map((trade) => ({
+  const brokerTrades = snapshot.accounts.flatMap((brokerAccount) => brokerAccount.trades);
+  const rows: ImportedExecution[] = brokerTrades.map((trade) => {
+    const assetClass = journalAssetClass(trade.assetClass);
+    return {
       symbol: trade.symbol,
       side: trade.side,
       quantity: trade.quantity,
@@ -62,8 +103,9 @@ export const syncAccount = async (accountId: string): Promise<SyncOutcome> => {
       // The SDK omits unparseable timestamps; a fill with no time can't be
       // journaled meaningfully, so it is dropped rather than guessed at.
       executedAt: trade.executedAt ?? "",
-    })),
-  );
+      ...(assetClass ? { assetClass } : {}),
+    };
+  });
   const timed = rows.filter((row) => row.executedAt !== "");
   const untimed = rows.length - timed.length;
 
@@ -81,8 +123,17 @@ export const syncAccount = async (accountId: string): Promise<SyncOutcome> => {
         );
         assertIbkrSyncTimeZone(current, statementTimeZone);
       }
+      // Saved before inserting so the account rebuild already prices these contracts.
+      const saved = getMultipliers();
+      const added = brokerMultipliers(brokerTrades, saved);
+      const multipliersAdded = Object.keys(added).length;
+      if (multipliersAdded > 0) setSetting("multipliers", JSON.stringify({ ...saved, ...added }));
       // Validation, history provenance, deduplication and sync status commit together.
       const inserted = insertExecutions(accountId, timed, "sync");
+      // Multipliers are journal-wide, so every account is repriced, as when saved in settings.
+      if (multipliersAdded > 0)
+        for (const other of db.select({ id: accounts.id }).from(accounts).all())
+          rebuildAccount(other.id);
       db.update(accounts)
         .set({
           lastSyncAt: syncedAt,
@@ -93,7 +144,7 @@ export const syncAccount = async (accountId: string): Promise<SyncOutcome> => {
         })
         .where(eq(accounts.id, accountId))
         .run();
-      return inserted;
+      return { ...inserted, multipliersAdded };
     },
     { behavior: "immediate" },
   );
@@ -107,5 +158,13 @@ export const syncAccount = async (accountId: string): Promise<SyncOutcome> => {
       );
   }
 
-  return { accountId, ...result, equity, positions: positions.length, syncedAt };
+  const { multipliersAdded, ...inserted } = result;
+  return {
+    accountId,
+    ...inserted,
+    equity,
+    positions: positions.length,
+    syncedAt,
+    multipliersAdded,
+  };
 };
